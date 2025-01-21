@@ -4,6 +4,12 @@ const bodyParser = require("body-parser");
 const app = express();
 const puerto = 1369;
 
+const laptops = [
+    { id: 1, marca: "Lenovo", procesador: "Intel Core i5", memoria: "16GB", disco: "1TB" },
+    { id: 2, marca: "Hp", procesador: "Intel Core i3", memoria: "8GB", disco: "208GB" },
+    { id: 3, marca: "Dell", procesador: "Ryzen 5", memoria: "8GB", disco: "500GB" },
+];
+
 app.use(bodyParser.json());
 
 app.use("/laptops", (req, resp, next) => {
@@ -12,12 +18,18 @@ app.use("/laptops", (req, resp, next) => {
 });
 
 app.post("/laptops", (req, resp) => {
-    req.body.id = 10;
-    resp.send(req.body);
+    const nuevaLaptop = {
+        id: laptops.length + 1, // Generar un nuevo ID
+        ...req.body,
+    };
+
+    laptops.push(nuevaLaptop);
+    resp.status(201).json(nuevaLaptop);
+    console.log(laptops);
 });
 
 app.get("/laptops/:id", (req, resp) => {
-    const id = req.params.id; 
+    const id = req.params.id;
     const laptop = {
         id: id,
         marca: "Toshiba",
@@ -30,11 +42,6 @@ app.get("/laptops/:id", (req, resp) => {
 
 
 app.get("/laptops", (request, response) => {
-    const laptops = [
-        { id: 1, marca: "Lenovo", procesador: "Intel Core i5", memoria: "16GB", disco: "1TB" },
-        { id: 2, marca: "Hp", procesador: "Intel Core i3", memoria: "8GB", disco: "208GB" },
-        { id: 3, marca: "Dell", procesador: "Ryzen 5", memoria: "8GB", disco: "500GB" },
-    ];
     response.send(laptops);
 });
 
