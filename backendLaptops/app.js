@@ -46,9 +46,19 @@ app.get("/laptops", (request, response) => {
 });
 
 app.put("/laptops/:id", (req, resp) => {
-    const id = req.params.id;
-    console.log("id", id);
-    resp.send(req.body);
+    const id = parseInt(req.params.id);
+    const index = laptops.findIndex(laptop => laptop.id === id);
+
+    if (index !== -1) {
+        laptops[index] = {
+            ...laptops[index],
+            ...req.body,
+        };
+
+        resp.status(200).json(laptops[index]);
+    } else {
+        resp.status(404).json({ error: "laptop no encontrado" });
+    }
 });
 
 app.delete("/laptops/:id", (req, resp) => {
