@@ -57,14 +57,20 @@ app.put("/laptops/:id", (req, resp) => {
 
         resp.status(200).json(laptops[index]);
     } else {
-        resp.status(404).json({ error: "laptop no encontrado" });
+        resp.status(404).json({ error: "Laptop no encontrado" });
     }
 });
 
 app.delete("/laptops/:id", (req, resp) => {
-    const id = req.params.id;
-    console.log("id:", id);
-    resp.send();
+    const id = parseInt(req.params.id);
+    const index = laptops.findIndex(laptop => laptop.id === id);
+
+    if (index !== -1) {
+        const deletedLaptop = laptops.splice(index, 1);
+        resp.status(200).json(deletedLaptop[0]);
+    } else {
+        resp.status(404).json({ error: "Laptop no encontrada" });
+    }
 });
 
 app.listen(puerto, () => {

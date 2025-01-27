@@ -52,10 +52,17 @@ app.put("/contactos/:idParam", (req, resp) => {
 });
 
 app.delete("/contactos/:id", (req, resp) => {
-    const id = req.params.id;
-    console.log("id:", id);
-    resp.send();
+    const id = parseInt(req.params.id); // Convertir el ID a número
+    const index = contactos.findIndex(contacto => contacto.id === id);
+
+    if (index !== -1) {
+        const deletedContact = contactos.splice(index, 1); // Eliminar el contacto
+        resp.status(200).json(deletedContact[0]); // Enviar el contacto eliminado como respuesta
+    } else {
+        resp.status(404).json({ error: "Contacto no encontrado" });
+    }
 });
+
 
 app.listen(puerto, () => {
     console.log("Servidor listo en el puerto " + 3001);
