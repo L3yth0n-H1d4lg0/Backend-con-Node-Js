@@ -4,6 +4,117 @@ const bodyParser = require("body-parser");
 const app = express();
 const puerto = 3001;
 
+//______________________________________________________
+const { Client } = require("pg");
+
+app.use(bodyParser.json());
+
+app.get("/contactos", (req, res) => {
+    const client = new Client({
+        user: "postgres",
+        host: "192.168.100.73",
+        database: "postgres",
+        password: "Dsoftware10@",
+        port: 5432,
+    });
+
+    client.connect()
+        .then(() => client.query("select * from contactos"))
+        .then(responseQuery => {
+            console.log(responseQuery.rows);
+            res.send(responseQuery.rows);
+            client.end();
+        })
+        .catch(err => {
+            console.log(err);
+            client.end();
+        })
+        .finally(() => client.end());
+});
+
+app.post("/contactos", (req, res) => {
+    const client = new Client({
+        user: "postgres",
+        host: "192.168.100.73",
+        database: "postgres",
+        password: "Dsoftware10@",
+        port: 5432,
+    });
+
+    client.connect()
+        .then(() => client.query(
+            "insert into contactos(nombre, apellido, celular) values($1, $2, $3)",
+            [req.body.nombre, req.body.apellido, req.body.celular]
+        ))
+        .then(responseQuery => {
+            console.log(req.body);
+            res.status(201).json(req.body);
+            client.end();
+        })
+        .catch(err => {
+            console.log(err);
+            client.end();
+        })
+        .finally(() => client.end());
+});
+
+app.put("/contactos/:idParam", (req, res) => {
+    const client = new Client({
+        user: "postgres",
+        host: "192.168.100.73",
+        database: "postgres",
+        password: "Dsoftware10@",
+        port: 5432,
+    });
+
+    const { idParam } = req.params;
+
+    client.connect()
+        .then(() => client.query(
+            "update contactos set nombre=$1, apellido=$2, celular=$3 where id=$4",
+            [req.body.nombre, req.body.apellido, req.body.celular, idParam]
+        ))
+        .then(responseQuery => {
+            console.log(responseQuery.rows);
+            res.status(200).json("Contacto actualizado con éxito");
+            client.end();
+        })
+        .catch(err => {
+            console.log(err);
+            client.end();
+        })
+        .finally(() => client.end());
+});
+
+app.delete("/contactos/:idParam", (req, res) => {
+    const client = new Client({
+        user: "postgres",
+        host: "192.168.100.73",
+        database: "postgres",
+        password: "Dsoftware10@",
+        port: 5432,
+    });
+
+    const { idParam } = req.params;
+
+    client.connect()
+        .then(() => client.query(
+            "delete from contactos where id=$1",
+            [idParam]
+        ))
+        .then(responseQuery => {
+            console.log(responseQuery.rows);
+            res.status(200).json("Contacto eliminado con éxito");
+            client.end();
+        })
+        .catch(err => {
+            console.log(err);
+            client.end();
+        })
+        .finally(() => client.end());
+});
+//______________________________________________________
+
 const contactos = [
     { id: 1, nombre: "Leython", apellido: "Hidalgo", celular: "0995972282" },
     { id: 2, nombre: "Nikola", apellido: "Tesla", celular: "0995972283" },
@@ -19,12 +130,9 @@ app.use("/contactos", (request, response, next) => {
     next();
 });
 
-app.get("/contactos", (request, response) => {
 
-    response.send(contactos);
-});
 
-app.post("/contactos", (req, resp) => {
+/*app.post("/contactos", (req, resp) => {
     const newContact = {
         id: contactos.length + 1, // Generar un nuevo ID
         ...req.body,
@@ -61,7 +169,7 @@ app.delete("/contactos/:id", (req, resp) => {
     } else {
         resp.status(404).json({ error: "Contacto no encontrado" });
     }
-});
+});*/
 
 
 app.listen(puerto, () => {
